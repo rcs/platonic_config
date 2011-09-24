@@ -7,9 +7,9 @@ Gem::Specification.new do |s|
   s.version     = PlatonicConfig::VERSION
   s.authors     = ["Ryan Sorensen"]
   s.email       = ["rcsorensen@gmail.com"]
-  s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.homepage    = "http://github.com/rcs/platonic_config"
+  s.summary     = %q{Easy per class and per instance configuration}
+  s.description = %q{Platonic makes it easy to stop worrying about the implementation details of class configuration}
 
   s.rubyforge_project = "platonic_config"
 
