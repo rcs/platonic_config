@@ -1,20 +1,12 @@
 require "platonic_config/version"
 
 module PlatonicConfig
-  OPTIONS = [:color, :size]
-
-  attr_writer *OPTIONS
-
-  OPTIONS.each do |opt|
-    define_method opt do
-      instance_variable_get("@#{opt}") || self.class.send(opt)
-    end
+  def options
+    self.class.options.merge instance_options
   end
 
-  def options
-    options = {}
-    OPTIONS.each{ |k| options[k] = send(k) || self.class.send(k) }
-    options
+  def instance_options
+    @options ||= {}
   end
 
   def configure
@@ -27,13 +19,60 @@ module PlatonicConfig
     base.extend ClassMethods
   end
 
+  def method_missing(sym,*args,&block)
+    if self.class.options.has_key? sym
+      if args.length == 1
+        instance_options[sym] = args[0]
+      end
+      options[sym]
+    else
+      super
+    end
+  end
+
+  def respond_to?(sym)
+    if self.class.options.has_key? sym
+      true
+    else
+      super
+    end
+  end
+
+  def reset_defaults
+    @options = {}
+  end
+
   module ClassMethods
-    attr_accessor *OPTIONS
+    def define_options(options = {})
+      @default_options = options
+      reset_defaults
+    end
 
     def options
-      options = {}
-      OPTIONS.each{ |k| options[k] = send(k) }
-      options
+      @options
+    end
+
+    def reset_defaults
+      @options = @default_options.dup
+    end
+
+    def method_missing(sym,*args,&block)
+      if @options.has_key? sym
+        if args.length == 1
+          @options[sym] = args[0]
+        end
+        @options[sym]
+      else
+        super
+      end
+    end
+
+    def respond_to?(sym)
+      if @options.has_key? sym
+        true
+      else
+        super
+      end
     end
 
     def configure
